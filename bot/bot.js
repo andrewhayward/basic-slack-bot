@@ -72,7 +72,7 @@ class Bot {
       if (msg.hidden || msg.user === this.meta.id) return;
 
       models.Message.create(msg, this).then((message) => {
-        const handlers = meta(this).handlers;
+        const { handlers } = meta(this);
         debug('Dispatching message to %d handlers: %O', handlers.length, message);
 
         handlers.every(({ filter, callback }, index) => {

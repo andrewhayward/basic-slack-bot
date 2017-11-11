@@ -1,7 +1,7 @@
 {
   "name": "basic-slack-bot",
   "description": "A basic Slack bot",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "bot",
   "license": "ISC",
   "homepage": "https://github.com/andrewhayward/basic-slack-bot",
@@ -26,7 +26,8 @@
     "pre-commit": "^1.2.2"
   },
   "pre-commit": [
-    "lint"
+    "lint",
+    "test"
   ],
   "eslintConfig": {
     "env": {
