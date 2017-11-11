@@ -30,10 +30,8 @@ function normalizeItem (item) {
 
   return Object.entries(item).reduce((obj, [key, value]) => {
     if (Array.isArray(value)) {
-      // eslint-disable-next-line no-param-reassign
       obj[key] = value.map(i => normalizeItem(i));
     } else {
-      // eslint-disable-next-line no-param-reassign
       obj[key] = [normalizeItem(value)];
     }
     return obj;

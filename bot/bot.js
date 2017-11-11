@@ -5,6 +5,7 @@ const {
   RTM_EVENTS
 } = require('@slack/client');
 
+const debug = require('./lib/debug');
 const models = require('./models');
 const Filter = require('./lib/filter');
 
@@ -37,13 +38,16 @@ class Bot {
       const client = meta(this).rtm;
 
       client.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (state) => {
+        debug('Successfully connected');
+
         const { prefs, ...self } = state.self;
         meta(this).meta = Object.freeze(self);
-        resolve();
+        resolve(this);
       });
 
       client.on(CLIENT_EVENTS.RTM.DISCONNECT, (reason) => {
         if (reason === 'account_inactive is not recoverable') {
+          debug('Connection failed');
           reject(reason);
         }
       });
@@ -68,12 +72,20 @@ class Bot {
       if (msg.hidden || msg.user === this.meta.id) return;
 
       models.Message.create(msg, this).then((message) => {
-        meta(this).handlers.every(({ filter, callback }) => {
+        const handlers = meta(this).handlers;
+        debug('Dispatching message to %d handlers: %O', handlers.length, message);
+
+        handlers.every(({ filter, callback }, index) => {
           let rsp = true;
 
           if (filter.test(message)) {
+            debug('Message passed filter: %O', filter);
             rsp = callback.call(this, message, this);
             if (typeof rsp === 'undefined') rsp = true;
+          }
+
+          if (!rsp) {
+            debug('Breaking after %d iterations', index + 1);
           }
 
           return !!rsp;

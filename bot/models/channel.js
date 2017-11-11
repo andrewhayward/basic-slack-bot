@@ -2,6 +2,8 @@ const Message = require('./message');
 const Model = require('./model');
 const Filter = require('../lib/filter');
 
+const debug = require('../lib/debug');
+
 class Channel extends Model {
   onMessage (filter, callback) {
     if (arguments.length === 1 && typeof filter === 'function') {
@@ -16,6 +18,8 @@ class Channel extends Model {
 
     this._bot.onMessage(this, (message) => {
       if (!filter.test(message)) return;
+
+      debug('Message passed channel filter: %O', filter);
 
       let rsp = callback.call(this, message, this, this._bot);
       if (typeof rsp === 'undefined') rsp = true;
